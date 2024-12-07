@@ -27,6 +27,10 @@ def main():
 	playerClicks = []
 
 	while(running):
+		# for x in gs.board:
+		# 	print(x)
+		# for x in validMoves:
+		# 	print(x.startRow, x.startCol, x.endRow, x.endCol)
 		for e in p.event.get():
 			if(e.type == p.QUIT):
 				running = False
@@ -45,9 +49,9 @@ def main():
 					print(move.getChessNotation())
 					if(move in validMoves):
 						gs.makeMove(move)
+						moveMade = True
 					sqSelected = ()
 					playerClicks = []
-				moveMade = True
 			elif(e.type == p.KEYDOWN):
 				if(e.key == p.K_z):
 					gs.undoMove()
