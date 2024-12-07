@@ -2,13 +2,13 @@ class GameState():
 	def __init__(self):
 		self.board = 	[["bR","bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
 						["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
-						["--", "--", "wp", "wp", "--", "--", "--", "--"],
 						["--", "--", "--", "--", "--", "--", "--", "--"],
 						["--", "--", "--", "--", "--", "--", "--", "--"],
-						["--", "--", "bp", "--", "--", "--", "--", "--"],
+						["--", "--", "--", "wQ", "--", "--", "--", "--"],
+						["--", "--", "--", "--", "--", "--", "--", "--"],
 						["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
 						["wR","wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
-		self.whiteToMove = False
+		self.whiteToMove = True
 		self.moveLog = []
 
 		self.moveFunctions = {'p' : self.getPawnMoves, 'R' : self.getRookMoves, 'N' : self.getKnightMoves, 'Q' : self.getQueenMoves, 'K' : self.getKingMoves, 'B' : self.getBishopMoves}
@@ -69,21 +69,99 @@ class GameState():
 					moves.append(Move((r, c), (r + 1, c + 1), self.board))
 
 
-	
 	def getRookMoves(self, r, c, moves):
-		pass
+		directions = [(-1, 0), (1, 0), (0, -1), (0, 1)] 
+		enemy_color = 'b' if self.whiteToMove else 'w'
+
+		for dr, dc in directions:
+			for i in range(1, 8): 
+				end_row, end_col = r + dr * i, c + dc * i
+				if 0 <= end_row < 8 and 0 <= end_col < 8: 
+					end_piece = self.board[end_row][end_col]
+					if end_piece == "--":
+						moves.append(Move((r, c), (end_row, end_col), self.board))
+					elif end_piece[0] == enemy_color: 
+						moves.append(Move((r, c), (end_row, end_col), self.board))
+						break 
+					else: 
+						break
+				else:
+					break
+
 
 	def getKnightMoves(self, r, c, moves):
-		pass
+		knight_moves = [
+			(-2, -1), (-2, 1), (-1, -2), (-1, 2),
+			(1, -2), (1, 2), (2, -1), (2, 1)
+		]
+		enemy_color = 'b' if self.whiteToMove else 'w'
+
+		for dr, dc in knight_moves:
+			end_row, end_col = r + dr, c + dc
+			if 0 <= end_row < 8 and 0 <= end_col < 8:
+				end_piece = self.board[end_row][end_col]
+				if end_piece == "--" or end_piece[0] == enemy_color:
+					moves.append(Move((r, c), (end_row, end_col), self.board))
+
 
 	def getBishopMoves(self, r, c, moves):
-		pass
+		directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)] 
+		enemy_color = 'b' if self.whiteToMove else 'w'
+
+		for dr, dc in directions:
+			for i in range(1, 8):
+				end_row, end_col = r + dr * i, c + dc * i
+				if 0 <= end_row < 8 and 0 <= end_col < 8:
+					end_piece = self.board[end_row][end_col]
+					if end_piece == "--": 
+						moves.append(Move((r, c), (end_row, end_col), self.board))
+					elif end_piece[0] == enemy_color:
+						moves.append(Move((r, c), (end_row, end_col), self.board))
+						break
+					else:
+						break
+				else:
+					break
+
 
 	def getQueenMoves(self, r, c, moves):
-		pass
+		directions = [
+			(-1, 0), (1, 0), (0, -1), (0, 1),
+			(-1, -1), (-1, 1), (1, -1), (1, 1)
+		]
+		enemy_color = 'b' if self.whiteToMove else 'w'
+
+		for dr, dc in directions:
+			for i in range(1, 8):
+				end_row, end_col = r + dr * i, c + dc * i
+				if 0 <= end_row < 8 and 0 <= end_col < 8:
+					end_piece = self.board[end_row][end_col]
+					if end_piece == "--":
+						moves.append(Move((r, c), (end_row, end_col), self.board))
+					elif end_piece[0] == enemy_color:
+						moves.append(Move((r, c), (end_row, end_col), self.board))
+						break
+					else:
+						break
+				else:
+					break 
+
 
 	def getKingMoves(self, r, c, moves):
-		pass
+		king_moves = [
+			(-1, -1), (-1, 0), (-1, 1),
+			(0, -1),          (0, 1),
+			(1, -1), (1, 0), (1, 1)
+		]
+		enemy_color = 'b' if self.whiteToMove else 'w'
+
+		for dr, dc in king_moves:
+			end_row, end_col = r + dr, c + dc
+			if 0 <= end_row < 8 and 0 <= end_col < 8:
+				end_piece = self.board[end_row][end_col]
+				if end_piece == "--" or end_piece[0] == enemy_color:
+					moves.append(Move((r, c), (end_row, end_col), self.board))
+
 
 class Move():
 	ranksToRows = {"1" : 7, "2" : 6, "3" : 5, "4" : 4, "5" : 3, "6" : 2, "7" : 1, "8" : 0}
