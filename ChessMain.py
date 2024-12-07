@@ -19,6 +19,7 @@ def main():
 	screen.fill(p.Color("white"))
 	gs = GameState()
 	validMoves = gs.getValidMoves()
+
 	moveMade = False
 	loadImages()
 	running = True
@@ -44,13 +45,13 @@ def main():
 					print(move.getChessNotation())
 					if(move in validMoves):
 						gs.makeMove(move)
-						moveMade = True
 					sqSelected = ()
 					playerClicks = []
+				moveMade = True
 			elif(e.type == p.KEYDOWN):
 				if(e.key == p.K_z):
 					gs.undoMove()
-					moveMade = True
+				moveMade = True
 		
 		if(moveMade):
 			validMoves = gs.getValidMoves()
