@@ -8,6 +8,14 @@ class GameState():
 						["--", "--", "--", "--", "--", "--", "--", "--"],
 						["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
 						["wR","wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
+		# self.board = 	[["--","--", "--", "--", "bK", "--", "--", "--"],
+		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
+		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
+		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
+		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
+		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
+		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
+		# 				["--","--", "--", "--", "wK", "--", "--", "--"]]
 		self.whiteToMove = True
 		self.moveLog = []
 
@@ -208,7 +216,7 @@ class GameState():
 		directions = [(-1, 0), (1, 0), (0, -1), (0, 1)] 
 		enemy_color = 'b' if self.whiteToMove else 'w'
 
-		for i in range(len(self.pins), -1, -1, -1):
+		for i in range(len(self.pins) - 1, -1, -1):
 			if(self.pins[i][0] == r and self.pins[i][1] == c):
 				piecePinned = True
 				pinDirection = (self.pins[i][2], self.pins[1][3])
@@ -240,11 +248,11 @@ class GameState():
 		enemy_color = 'b' if self.whiteToMove else 'w'
 		piecePinned = False
 		pinDirection = ()
-		for i in range(len(self.pins) - 1, -1, -1):
+		for i in range(len(self.pins) - 1, -1):
 			if(self.pins[i][0] == r and self.pins[i][1] == c):
 				piecePinned = True
 				pinDirection = (self.pins[i][2], self.pins[i][3])
-				self.remove(self.pins[i])
+				self.pins.remove(self.pins[i])
 				break
 
 		for dr, dc in knight_moves:
@@ -265,7 +273,7 @@ class GameState():
 			if(self.pins[i][0] == r and self.pins[i][1] == c):
 				piecePinned = True
 				pinDirection = (self.pins[i][2], self.pins[i][3])
-				self.remove(self.pins[i])
+				self.pins.remove(self.pins[i])
 				break
 
 		for dr, dc in directions:
@@ -297,23 +305,31 @@ class GameState():
 			(1, -1), (1, 0), (1, 1)
 		]
 		enemy_color = 'b' if self.whiteToMove else 'w'
+		original_king_location = self.whiteKingLocation if self.whiteToMove else self.blackKingLocation
 
 		for dr, dc in king_moves:
 			end_row, end_col = r + dr, c + dc
-			if 0 <= end_row < 8 and 0 <= end_col < 8:
+			if 0 <= end_row < 8 and 0 <= end_col < 8:  # Check if within bounds
 				end_piece = self.board[end_row][end_col]
-				if(end_piece[0] == enemy_color):
-					if(enemy_color == 'b'):
+				if end_piece[0] != ('w' if self.whiteToMove else 'b'):  # Not moving into a friendly piece
+					# Temporarily move the king
+					if self.whiteToMove:
 						self.whiteKingLocation = (end_row, end_col)
 					else:
 						self.blackKingLocation = (end_row, end_col)
+					
 					inCheck, pins, checks = self.checkForPinsAndChecks()
-					if(not inCheck):
+					
+					# If the king is not in check after the move, add it to the moves
+					if not inCheck:
 						moves.append(Move((r, c), (end_row, end_col), self.board))
-					if(enemy_color == 'b'):
-						self.whiteKingLocation = (r, c)
+					
+					# Undo the temporary move
+					if self.whiteToMove:
+						self.whiteKingLocation = original_king_location
 					else:
-						self.blackKingLocation = (r, c)
+						self.blackKingLocation = original_king_location
+
 
 class Move():
 	ranksToRows = {"1" : 7, "2" : 6, "3" : 5, "4" : 4, "5" : 3, "6" : 2, "7" : 1, "8" : 0}

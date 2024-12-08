@@ -29,8 +29,8 @@ def main():
 	while(running):
 		# for x in gs.board:
 		# 	print(x)
-		# for x in validMoves:
-		# 	print(x.startRow, x.startCol, x.endRow, x.endCol)
+		for x in validMoves:
+			print(x.startRow, x.startCol, x.endRow, x.endCol)
 		for e in p.event.get():
 			if(e.type == p.QUIT):
 				running = False
