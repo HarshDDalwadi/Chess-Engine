@@ -89,7 +89,7 @@ class GameState():
 				self.currentCastleRights.wqs = False
 			elif move.endCol == 7:
 				self.currentCastleRights.wks = False
-		elif move.piece_captured == "bR":
+		elif move.pieceCaptured == "bR":
 			if move.endCol == 0:
 				self.currentCastleRights.bqs = False
 			elif move.endCol == 7:
