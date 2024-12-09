@@ -29,7 +29,14 @@ def main():
 	while(running):
 		# for x in validMoves:
 		# 	print(x.startRow, x.startCol, x.endRow, x.endCol)
-		print(gs.enpassantPossibleLog)
+		# print(gs.enpassantPossibleLog)
+		# print(gs.currentCastleRights.bks, gs.currentCastleRights.bqs, gs.currentCastleRights.wks, gs.currentCastleRights.wqs)
+		print("------------------------------------------------------")
+		for x in gs.CastleRightsLog:
+			print(x.bks, x.bqs, x.wks, x.wqs)
+		print("------------------------------------------------------")
+
+
 		for e in p.event.get():
 			if(e.type == p.QUIT):
 				running = False
