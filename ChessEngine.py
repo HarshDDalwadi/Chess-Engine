@@ -1,21 +1,21 @@
 class GameState():
 	def __init__(self):
-		# self.board = 	[["bR","bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
-		# 				["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+		self.board = 	[["bR","bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+						["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+						["--", "--", "--", "--", "--", "--", "--", "--"],
+						["--", "--", "--", "--", "--", "--", "--", "--"],
+						["--", "--", "--", "--", "--", "--", "--", "--"],
+						["--", "--", "--", "--", "--", "--", "--", "--"],
+						["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
+						["wR","wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
+		# self.board = 	[["--","--", "--", "--", "--", "--", "--", "--"],
+		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
+		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
+		# 				["--", "--", "--", "--", "--", "bQ", "--", "--"],
 		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
 		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
 		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
-		# 				["--", "--", "--", "--", "--", "--", "--", "--"],
-		# 				["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
-		# 				["wR","wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
-		self.board = 	[["--","--", "--", "--", "--", "--", "--", "--"],
-						["--", "--", "--", "--", "--", "--", "--", "--"],
-						["--", "--", "--", "--", "--", "--", "--", "--"],
-						["--", "--", "--", "--", "--", "bQ", "--", "--"],
-						["--", "--", "--", "--", "--", "--", "--", "--"],
-						["--", "--", "--", "--", "--", "--", "--", "--"],
-						["--", "--", "--", "--", "--", "--", "--", "--"],
-						["wR","--", "--", "--", "wK", "--", "--", "wR"]]
+		# 				["wR","--", "--", "--", "wK", "--", "--", "wR"]]
 		self.whiteToMove = True
 		self.moveLog = []
 
@@ -61,8 +61,14 @@ class GameState():
 				self.board[move.endRow][move.endCol - 2] = '--'
 
 		self.enpassantPossibleLog.append(self.enpassantPossible)
+		temp = CastleRights(self.currentCastleRights.wks, self.currentCastleRights.bks, self.currentCastleRights.wqs, self.currentCastleRights.bqs)
 		self.updateCastleRights(move)
 		self.CastleRightsLog.append(CastleRights(self.currentCastleRights.wks, self.currentCastleRights.bks, self.currentCastleRights.wqs, self.currentCastleRights.bqs))
+		if(len(self.CastleRightsLog) >= 2):
+			self.CastleRightsLog.pop()
+			self.CastleRightsLog.pop()
+			self.CastleRightsLog.append(temp)
+			self.CastleRightsLog.append(CastleRights(self.currentCastleRights.wks, self.currentCastleRights.bks, self.currentCastleRights.wqs, self.currentCastleRights.bqs))
 
 
 	def updateCastleRights(self, move):
@@ -108,15 +114,17 @@ class GameState():
 				self.blackKingLocation = (move.startRow, move.startCol)
 
 			if move.isEnpassantMove:
-				print(move.pieceCaptured)
+				# print(move.pieceCaptured)
 				if(self.whiteToMove):
 					self.board[move.endRow + 1][move.endCol] = 'bp'
 				else:
 					self.board[move.endRow - 1][move.endCol] = 'wp'
 				self.board[move.endRow][move.endCol] = '--'
 
-			self.enpassantPossible = self.enpassantPossibleLog.pop()
+			self.enpassantPossibleLog.pop()
 			self.enpassantPossible = self.enpassantPossibleLog[-1]
+			self.CastleRightsLog.pop()
+			self.currentCastleRights = self.CastleRightsLog[-1]
 
 			if(move.isCastleMove):
 				if(move.endCol - move.startCol == 2):
@@ -125,8 +133,6 @@ class GameState():
 				else:
 					self.board[move.endRow][move.endCol - 2] = self.board[move.endRow][move.endCol + 1]
 					self.board[move.endRow][move.endCol + 1] = '--'
-			self.CastleRightsLog.pop()
-			self.currentCastleRights = self.CastleRightsLog[-1]
 
 
 	def getValidMoves(self):
@@ -265,7 +271,7 @@ class GameState():
 				break
 
 		if(self.whiteToMove):
-			print(self.enpassantPossible)
+			# print(self.enpassantPossible)
 			if(self.board[r - 1][c] == "--"):
 				if(not piecePinned or pinDirection == (-1, 0)):
 					moves.append(Move((r, c), (r - 1, c), self.board))
@@ -277,7 +283,7 @@ class GameState():
 					if(not piecePinned or pinDirection == (-1, -1)):
 						moves.append(Move((r, c), (r - 1, c - 1), self.board))
 				if((r - 1, c - 1) == self.enpassantPossible):
-					print("ENPASSANT POSSIBLE")
+					# print("ENPASSANT POSSIBLE")
 					moves.append(Move((r, c), (r - 1, c - 1), self.board, isEnpassantMove = True))
 
 			if(c + 1 <= 7):
@@ -286,7 +292,7 @@ class GameState():
 					if(not piecePinned or pinDirection == (-1, 1)):
 						moves.append(Move((r, c), (r - 1, c + 1), self.board))
 				if((r - 1, c + 1) == self.enpassantPossible):
-					print("ENPASSANT POSSIBLE")
+					# print("ENPASSANT POSSIBLE")
 					moves.append(Move((r, c), (r - 1, c + 1), self.board, isEnpassantMove = True))
 		else:
 			if(self.board[r + 1][c] == "--"):
@@ -301,7 +307,7 @@ class GameState():
 					if(not piecePinned or pinDirection == (1, -1)):
 						moves.append(Move((r, c), (r + 1, c - 1), self.board))
 				if((r + 1, c - 1) == self.enpassantPossible):
-					print("ENPASSANT POSSIBLE")
+					# print("ENPASSANT POSSIBLE")
 					moves.append(Move((r, c), (r + 1, c - 1), self.board, isEnpassantMove = True))
 			
 			if(c + 1 <= 7):
@@ -310,7 +316,7 @@ class GameState():
 					if(not piecePinned or pinDirection == (1, 1)):
 						moves.append(Move((r, c), (r + 1, c + 1), self.board))
 				if((r + 1, c + 1) == self.enpassantPossible):
-					print("ENPASSANT POSSIBLE")
+					# print("ENPASSANT POSSIBLE")
 					moves.append(Move((r, c), (r + 1, c + 1), self.board, isEnpassantMove = True))
 
 

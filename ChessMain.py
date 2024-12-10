@@ -31,10 +31,10 @@ def main():
 		# 	print(x.startRow, x.startCol, x.endRow, x.endCol)
 		# print(gs.enpassantPossibleLog)
 		# print(gs.currentCastleRights.bks, gs.currentCastleRights.bqs, gs.currentCastleRights.wks, gs.currentCastleRights.wqs)
-		print("------------------------------------------------------")
-		for x in gs.CastleRightsLog:
-			print(x.bks, x.bqs, x.wks, x.wqs)
-		print("------------------------------------------------------")
+		# print("------------------------------------------------------")
+		# for x in gs.CastleRightsLog:
+		# 	print(x.wks, x.bks, x.wqs, x.bqs)
+		# print("------------------------------------------------------")
 
 
 		for e in p.event.get():
@@ -52,7 +52,7 @@ def main():
 					playerClicks.append(sqSelected)
 				if(len(playerClicks) == 2):
 					move = Move(playerClicks[0], playerClicks[1], gs.board)
-					print(move.getChessNotation())
+					# print(move.getChessNotation())
 					for i in range(len(validMoves)):
 						if(move == validMoves[i]):
 							gs.makeMove(validMoves[i])
