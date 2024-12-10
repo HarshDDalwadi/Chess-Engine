@@ -1,5 +1,6 @@
 from ChessEngine import *
 import pygame as p # type: ignore
+from ChessAI import *
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8
@@ -19,6 +20,8 @@ def main():
 	screen.fill(p.Color("white"))
 	gs = GameState()
 	validMoves = gs.getValidMoves()
+	playerOne = True
+	playerTwo = False
 
 	moveMade = False
 	loadImages()
@@ -36,36 +39,43 @@ def main():
 		# 	print(x.wks, x.bks, x.wqs, x.bqs)
 		# print("------------------------------------------------------")
 
+		humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
 
 		for e in p.event.get():
 			if(e.type == p.QUIT):
 				running = False
 			elif(e.type == p.MOUSEBUTTONDOWN):
-				location = p.mouse.get_pos()
-				col = location[0] // SQ_SIZE
-				row = location[1] // SQ_SIZE
-				if(sqSelected == (row, col)):
-					sqSelected = ()
-					playerClicks = []
-				else:
-					sqSelected = (row, col)
-					playerClicks.append(sqSelected)
-				if(len(playerClicks) == 2):
-					move = Move(playerClicks[0], playerClicks[1], gs.board)
-					# print(move.getChessNotation())
-					for i in range(len(validMoves)):
-						if(move == validMoves[i]):
-							gs.makeMove(validMoves[i])
-							moveMade = True
-							sqSelected = ()
-							playerClicks = []
-					if not moveMade:
-						playerClicks = [sqSelected]
+				if(humanTurn):
+					location = p.mouse.get_pos()
+					col = location[0] // SQ_SIZE
+					row = location[1] // SQ_SIZE
+					if(sqSelected == (row, col)):
+						sqSelected = ()
+						playerClicks = []
+					else:
+						sqSelected = (row, col)
+						playerClicks.append(sqSelected)
+					if(len(playerClicks) == 2):
+						move = Move(playerClicks[0], playerClicks[1], gs.board)
+						# print(move.getChessNotation())
+						for i in range(len(validMoves)):
+							if(move == validMoves[i]):
+								gs.makeMove(validMoves[i])
+								moveMade = True
+								sqSelected = ()
+								playerClicks = []
+						if not moveMade:
+							playerClicks = [sqSelected]
 			elif(e.type == p.KEYDOWN):
 				if(e.key == p.K_z):
 					gs.undoMove()
 				moveMade = True
 		
+		if(not humanTurn):
+			AIMove = finRandomMove(validMoves)
+			gs.makeMove(AIMove)
+			moveMade = True
+
 		if(moveMade):
 			validMoves = gs.getValidMoves()
 			moveMade = False
