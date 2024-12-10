@@ -41,6 +41,7 @@ def findGreedyMove(gs, validMoves):
 	return bestPlayerMove
 
 def findBestMoveMinMax(gs, validMoves):
+	random.shuffle(validMoves)
 	global nextMove
 	nextMove = None
 	# findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
