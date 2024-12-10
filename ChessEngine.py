@@ -133,6 +133,8 @@ class GameState():
 				else:
 					self.board[move.endRow][move.endCol - 2] = self.board[move.endRow][move.endCol + 1]
 					self.board[move.endRow][move.endCol + 1] = '--'
+			self.checkMate = False
+			self.staleMate = False
 
 
 	def getValidMoves(self):
@@ -171,6 +173,15 @@ class GameState():
 				self.getKingMoves(kingRow, kingCol, moves)
 		else:
 			moves = self.getAllPossibleMoves()
+
+		if len(moves) == 0:
+			if self.inCheck():
+				self.checkMate = True
+			else:
+				self.staleMate = True
+		else:
+			self.checkMate = False
+			self.staleMate = False
 		self.getCastleMoves(kingRow, kingCol, moves)
 		
 		if(len(moves) == 0):

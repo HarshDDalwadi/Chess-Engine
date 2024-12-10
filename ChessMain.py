@@ -22,6 +22,7 @@ def main():
 	validMoves = gs.getValidMoves()
 	playerOne = True
 	playerTwo = False
+	gameOver = False
 
 	moveMade = False
 	loadImages()
@@ -44,44 +45,63 @@ def main():
 		for e in p.event.get():
 			if(e.type == p.QUIT):
 				running = False
-			elif(e.type == p.MOUSEBUTTONDOWN):
-				if(humanTurn):
-					location = p.mouse.get_pos()
-					col = location[0] // SQ_SIZE
-					row = location[1] // SQ_SIZE
-					if(sqSelected == (row, col)):
-						sqSelected = ()
-						playerClicks = []
-					else:
-						sqSelected = (row, col)
-						playerClicks.append(sqSelected)
-					if(len(playerClicks) == 2):
-						move = Move(playerClicks[0], playerClicks[1], gs.board)
-						# print(move.getChessNotation())
-						for i in range(len(validMoves)):
-							if(move == validMoves[i]):
-								gs.makeMove(validMoves[i])
-								moveMade = True
-								sqSelected = ()
-								playerClicks = []
-						if not moveMade:
-							playerClicks = [sqSelected]
-			elif(e.type == p.KEYDOWN):
-				if(e.key == p.K_z):
-					gs.undoMove()
-				moveMade = True
+			if not gameOver:
+				if(e.type == p.MOUSEBUTTONDOWN):
+					if(humanTurn):
+						location = p.mouse.get_pos()
+						col = location[0] // SQ_SIZE
+						row = location[1] // SQ_SIZE
+						if(sqSelected == (row, col)):
+							sqSelected = ()
+							playerClicks = []
+						else:
+							sqSelected = (row, col)
+							playerClicks.append(sqSelected)
+						if(len(playerClicks) == 2):
+							move = Move(playerClicks[0], playerClicks[1], gs.board)
+							# print(move.getChessNotation())
+							for i in range(len(validMoves)):
+								if(move == validMoves[i]):
+									gs.makeMove(validMoves[i])
+									moveMade = True
+									sqSelected = ()
+									playerClicks = []
+							if not moveMade:
+								playerClicks = [sqSelected]
+				elif(e.type == p.KEYDOWN):
+					if(e.key == p.K_z):
+						gs.undoMove()
+					elif(e.key == p.K_r):
+						gs = GameState()
+					moveMade = True
 		
-		if(not humanTurn):
-			AIMove = finRandomMove(validMoves)
+		if(not gameOver and not humanTurn):
+			AIMove = findGreedyMove(gs, validMoves)
+			if(AIMove is None):
+				AIMove = findRandomMove(validMoves)
 			gs.makeMove(AIMove)
 			moveMade = True
 
 		if(moveMade):
 			validMoves = gs.getValidMoves()
 			moveMade = False
+		if(gs.checkMate):
+			gameOver = True
+			if(gs.whiteToMove):
+				drawEndGameText(screen, "Black wins by checkmate")
+			else:
+				drawEndGameText(screen, "White wins by checkmate")
 		drawGameState(screen, gs, validMoves, sqSelected)
 		clock.tick(MAX_FPS)
 		p.display.flip()
+
+def drawEndGameText(screen, text):
+	font = p.font.SysFont("Helvetica", 32, True, False)
+	textObject = font.render(text, False, p.Color("gray"))
+	textLocation = p.Rect(0, 0, WIDTH, HEIGHT).move(WIDTH / 2 - textObject.get_width() / 2, HEIGHT / 2 - textObject.get_height() / 2)
+	screen.blit(textObject, textLocation)
+	textObject = font.render(text, False, p.Color('black'))
+	screen.blit(textObject, textLocation.move(2, 2))
 
 def drawGameState(screen, gs, validMoves, sqSelected):
 	drawBoard(screen)
