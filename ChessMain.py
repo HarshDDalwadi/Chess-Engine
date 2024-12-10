@@ -20,7 +20,7 @@ def main():
 	screen.fill(p.Color("white"))
 	gs = GameState()
 	validMoves = gs.getValidMoves()
-	playerOne = False
+	playerOne = True
 	playerTwo = True
 	gameOver = False
 
@@ -71,6 +71,8 @@ def main():
 				elif(e.type == p.KEYDOWN):
 					if(e.key == p.K_z):
 						gs.undoMove()
+						if(not playerOne or not playerTwo): 
+							gs.undoMove()
 						gameOver = False
 					elif(e.key == p.K_r):
 						gs = GameState()
