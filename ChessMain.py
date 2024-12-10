@@ -20,7 +20,7 @@ def main():
 	screen.fill(p.Color("white"))
 	gs = GameState()
 	validMoves = gs.getValidMoves()
-	playerOne = True
+	playerOne = False
 	playerTwo = False
 	gameOver = False
 
@@ -71,12 +71,14 @@ def main():
 				elif(e.type == p.KEYDOWN):
 					if(e.key == p.K_z):
 						gs.undoMove()
+						gameOver = False
 					elif(e.key == p.K_r):
 						gs = GameState()
+						gameOver = False
 					moveMade = True
 		
 		if(not gameOver and not humanTurn):
-			AIMove = findGreedyMove(gs, validMoves)
+			AIMove = findBestMoveMinMax(gs, validMoves)
 			if(AIMove is None):
 				AIMove = findRandomMove(validMoves)
 			gs.makeMove(AIMove)
