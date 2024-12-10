@@ -13,7 +13,7 @@ def findGreedyMove(gs, validMoves):
 	opponentMinMaxScore = CHECKMATE
 	bestPlayerMove = None
 	random.shuffle(validMoves)
-	for playerMove in validMoves :
+	for playerMove in validMoves:
 		gs.makeMove(playerMove)
 		opponentMoves = gs.getValidMoves()
 		if(gs.staleMate):
@@ -43,7 +43,8 @@ def findGreedyMove(gs, validMoves):
 def findBestMoveMinMax(gs, validMoves):
 	global nextMove
 	nextMove = None
-	findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+	# findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+	findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1)
 	return nextMove
 
 def findMoveMinMax(gs, validMoves, depth, whiteToMove):
@@ -75,6 +76,48 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
 					nextMove = move
 			gs.undoMove()
 		return minScore
+	
+def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
+	global nextMove
+	if(depth == 0):
+		return turnMultiplier * scoreBoard(gs)
+
+	maxScore = -CHECKMATE
+	for move in validMoves:
+		gs.makeMove(move)
+		nextMoves = gs.getValidMoves()
+		score = -findMoveNegaMax(gs, nextMoves, depth - 1, -turnMultiplier)
+		if(score > maxScore):
+			maxScore = score
+			if(depth == DEPTH):
+				nextMove = move
+
+		gs.undoMove()
+	
+	return maxScore
+
+def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):
+	global nextMove
+	if(depth == 0):
+		return turnMultiplier * scoreBoard(gs)
+
+	maxScore = -CHECKMATE
+	for move in validMoves:
+		gs.makeMove(move)
+		nextMoves = gs.getValidMoves()
+		score = -findMoveNegaMaxAlphaBeta(gs, nextMoves, depth - 1, -beta, -alpha, -turnMultiplier)
+		if(score > maxScore):
+			maxScore = score
+			if(depth == DEPTH):
+				nextMove = move
+		gs.undoMove()
+
+		if(maxScore > alpha):
+			alpha = maxScore
+		if(alpha >= beta):
+			break
+	return maxScore
+
 
 def scoreBoard(gs):
 	if(gs.checkMate):

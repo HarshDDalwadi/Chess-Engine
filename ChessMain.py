@@ -21,7 +21,7 @@ def main():
 	gs = GameState()
 	validMoves = gs.getValidMoves()
 	playerOne = False
-	playerTwo = False
+	playerTwo = True
 	gameOver = False
 
 	moveMade = False
